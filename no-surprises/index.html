@@ -1,0 +1,612 @@
+<!--Everything is licenced under the Apache license 2.0, except for the song. See license.txt in the same folder.-->
+<html>
+
+	<head>
+
+		<title>No Surprises</title>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+
+		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+		<style>
+
+			body {
+
+				background-color: white; /* #190030 */
+
+			}
+
+			
+
+			#play_border {
+
+				position: relative;
+
+				top: 150px;
+
+				left: 50%;
+
+				height: 150px;
+
+				width: 150px;
+
+				margin-top: -75px;
+
+				margin-left: -75px;
+
+				
+
+				background-color: black;
+
+
+
+				border-radius: 100px;
+
+				border-color: white;
+
+				border-style: solid;
+
+				border-width: 2px;
+
+
+
+
+
+				box-shadow: 0px 0px 10px black;
+
+			}
+
+			#play_inside {
+
+				position: relative;
+
+				top: 50%;
+
+				left: 50%;
+
+				height: 140px;
+
+				width: 140px;
+
+				margin-top: -70px;
+
+				margin-left: -70px;
+
+				
+
+				background-color: black;
+
+
+
+				border-radius: 100px;
+
+				
+
+				opacity: 0.5;
+
+			}
+
+			#play_button {
+
+				height: 100px;
+
+				width: 100px;
+
+			}
+
+			
+
+			#play_button {
+
+				height: 100px;
+
+				width: 100px;
+
+				position: relative;
+
+				top: -50px;
+
+				left: 30px;
+
+			}
+
+			
+
+			
+
+			#lyrics {
+
+				position: relative;
+
+				top: 250px;
+
+				left: 50%;
+
+				margin-left: -190px;
+
+				width: 380px;
+
+			
+
+				font-family: courier, 'courier new', monospace;
+
+				font-size: 20px;
+
+				word-spacing: 0pt;
+
+				
+
+				padding-bottom: 100px;
+
+			}
+
+			
+
+			#title {
+
+				position: relative;
+
+				top: 250px;
+
+				left: 50%;
+
+				margin-left: -300px;
+
+				width: 600px;
+
+			
+
+				font-family: courier, 'courier new', monospace;
+
+				font-size: 42px;
+
+				word-spacing: 0pt;
+
+			}
+
+			
+
+			#loading {
+
+				position: relative;
+
+				top: 400px;
+
+				left: 50%;
+
+				margin-left: -300px;
+
+				width: 600px;
+
+				
+
+			
+
+				font-family: courier, 'courier new', monospace;
+
+				font-size: 42px;
+
+				word-spacing: 0pt;
+
+				text-align: center;
+
+			}
+
+			
+
+			#link {
+
+				position: fixed;
+
+				top: 5px;
+
+			}
+
+			
+
+			A:link {text-decoration: underline; color: black;}
+
+			A:visited {text-decoration: underline; color: black;}
+
+			A:active {text-decoration: underline; color: black;}
+
+			A:hover {text-decoration: underline; color: black;}
+
+		</style>
+
+		<script>
+
+			var music = document.createElement('audio');
+
+			music.setAttribute('src', 'https://dl.dropboxusercontent.com/u/17820773/sans%20papier/magazine/no%20surprises/No%20Surprises.mp3');
+
+			
+
+			$(function () {
+
+				
+
+				$("#title").typeWriter({speed: 175});
+
+				
+
+				//button
+
+				$("#play_inside").toggle(function () {
+
+					music.play();
+
+					$(this).animate({
+
+						"background-color": "white"
+
+					}, 400);
+
+					$('#loading').show();
+
+					$('#title').hide(400);
+
+
+
+				}, function () {
+
+					music.pause();
+
+					$(this).animate({
+
+						"background-color": "black"
+
+					}, 400);
+
+				}).hover(function () {
+
+					$("#play_border").animate({
+
+						opacity: 0.85
+
+					}, 200);
+
+				}, function () {
+
+					$("#play_border").animate({
+
+						opacity: 1
+
+					}, 200);
+
+				});
+
+				
+
+				
+
+				
+
+				//musicListener     EX: musicListener.add(3, function () {alert("allo");});
+
+				
+
+				musicListener = {
+
+					listeners: [],
+
+					add: function ( time, callback ) {
+
+						this.listeners[time] = callback;
+
+					},
+
+					trigger: function ( time ) {
+
+						if (typeof(this.listeners[time]) !== 'undefined') {
+
+							this.listeners[time](); 
+
+							this.listeners[time] = function () {};
+
+						}
+
+						
+
+					}
+
+				};
+
+				
+
+				setInterval(function () {
+
+					musicListener.trigger(Math.round(music.currentTime));
+
+				}, 500);
+
+				
+
+				
+
+				
+
+				//lyrics
+
+				var lyrics = $("#lyrics").html();
+
+				var html = '';
+
+				
+
+				verses = lyrics.split("\"");
+
+				
+
+				lyricsData = {
+
+					nbrVerses: verses.length,
+
+					nbrWords: []
+
+				};
+
+				
+
+				for (i=0; i<verses.length; i++) {
+
+					html += "<div class='verse_"+i+" verse' id='verse_"+i+"' style='display: none'>"+verses[i]+"</div>";
+
+				}
+
+				
+
+				$("#lyrics").html(html);
+
+				
+
+
+
+				
+
+				
+
+				musicListener.add(25, function () {
+
+					$("#loading").animate({"top": "-=200"}, function () {
+
+						$("#loading").animate({"opacity": "0"}, 10000);
+
+					}); 
+
+					$("#verse_0").typeWriter({speed: 175});} 
+
+				);
+
+				musicListener.add(34, function () {$("#verse_1").typeWriter();} );
+
+				musicListener.add(41, function () {$("#verse_2").typeWriter();} );
+
+				musicListener.add(50, function () {$("#verse_3").typeWriter();} );
+
+				musicListener.add(58, function () {$("#verse_4").typeWriter();} );
+
+				musicListener.add(63, function () {$("#verse_5").typeWriter();} );
+
+				musicListener.add(76, function () {$("#verse_6").typeWriter();} );
+
+				musicListener.add(82, function () {$("#verse_7").typeWriter();} );
+
+				musicListener.add(88, function () {$("#verse_8").typeWriter();} );
+
+				musicListener.add(94, function () {$("#verse_9").typeWriter();} );
+
+				musicListener.add(101, function () {$("#verse_10").typeWriter();} );
+
+				musicListener.add(107, function () {$("#verse_11").typeWriter({speed: 250});} );
+
+				musicListener.add(120, function () {$("#verse_12").typeWriter({speed: 250});} );
+
+				musicListener.add(132, function () {$("#verse_13").typeWriter();} );
+
+				musicListener.add(139, function () {$("#verse_14").typeWriter({speed: 250});} );
+
+				musicListener.add(146, function () {$("#verse_15").typeWriter();} );
+
+				musicListener.add(176, function () {$("#verse_16").typeWriter();} );
+
+				musicListener.add(187, function () {$("#verse_17").typeWriter();} );
+
+				musicListener.add(194, function () {$("#verse_18").typeWriter();} );
+
+				musicListener.add(200, function () {$("#verse_19").typeWriter();} );
+
+				musicListener.add(220, function () {$(".verse").hide("blind", 500)
+
+					.each(
+
+						function() {
+
+							$(this).hide();
+
+						}
+
+					)
+
+					.show();					
+
+				} );
+
+				musicListener.add(340, function () { resetPage() } );
+
+				
+
+				
+
+				//loading
+
+				$("#loading").hide();
+
+				
+
+				(function ($) {
+
+					
+
+					var a = [".", "..", "...", "....", "...", "..", "."];
+
+					var i = 0;
+
+					setInterval(function () {
+
+						$("#loading").html(a[i]);
+
+						(i==a.length) ? i = 0 : i++;
+
+					}, 200);
+
+				})($);
+
+				
+
+				
+
+				
+
+				
+
+			});
+
+			
+
+			function resetPage() {
+
+				location.reload();
+
+			}
+
+			
+
+			//Type Writer plugin
+
+			(function ($) {
+
+				$.fn.typeWriter = function (arg) {
+
+					if (typeof(arg) == "undefined") {var arg = {};}
+
+				
+
+					this.each(function () {
+
+						var $ele = $(this);
+
+						
+
+						$ele.show();
+
+						
+
+						var html = $ele.html();
+
+						var i = 0;
+
+						var letters = html.split("");
+
+						
+
+						$ele.html("");
+
+						
+
+						console.log("starting: "+html);
+
+						
+
+						var interval = setInterval(function () {
+
+							if (i === letters.length) { clearInterval(interval); console.log("done with: "+html);}
+
+							$ele.html( letters.slice(0, i).join("")+((i % 2 == 0 && i !== letters.length) ?  "_" :  "") );
+
+							i++;
+
+						}, ( (typeof(arg.speed) !== "undefined")? arg.speed : 150) );
+
+						
+
+						return this;
+
+					});
+
+				};
+
+			})( jQuery );
+
+		</script>
+
+	</head>
+
+	<body>
+
+		<a href="http://sanspapier.tumblr.com/magazine" id="link">Retourner</a>
+
+		<div id="play_border" class="play">
+
+			<div id="play_inside" class="play"></div>
+
+		</div>
+
+
+
+		
+
+		<div id="title">Radiohead - No Surprises</div>
+
+		<div id="loading"></div>
+
+		<div id="lyrics">
+
+A heart that's full up like a landfill"
+
+A job that slowly kills you"
+
+Bruises that won't heal"
+
+You look so tired and unhappy"
+
+Bring down the government"
+
+They don't, they don't speak for us"
+
+I'll take a quiet life"
+
+A handshake of carbon monoxide"
+
+No alarms and no surprises"
+
+No alarms and no surprises"
+
+No alarms and no surprises"
+
+Silent, silent"
+
+This is my final fit, my final bellyache with"
+
+No alarms and no surprises"
+
+No alarms and no surprises"
+
+No alarms and no surprises please"
+
+Such a pretty house, and such a pretty garden"
+
+No alarms and no surprises"
+
+No alarms and no surprises"
+
+No alarms and no surprises please
+
+		</div>
+
+	</body>
+
+</html>
